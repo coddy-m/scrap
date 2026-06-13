@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My 18 Years | A Dreamy Memory Wall</title>
+    <script src="package.js"></script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Nunito:wght@300;400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- GSAP & Lenis -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+
+    <style>
+        :root {
+            --soft-pink: #FFD1DC;
+            --lavender: #E6E6FA;
+            --mint: #C1E1DC;
+            --peach: #FFDAB9;
+            --cream: #FFF8F0;
+            --coral: #FFB6C1;
+            --sage: #B8D4C9;
+            --text: #5A5A5A;
+            --gold: #FFD700;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #FFF5F7 0%, #F0E6FF 50%, #FFF0F5 100%);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* LOCK BODY SCROLL UNTIL UNLOCKED */
+        body.locked { overflow: hidden; height: 100vh; }
+
+        .handwritten {
+            font-family: 'Caveat', cursive;
+        }
+
+        .cursive {
+            font-family: 'Pacifico', cursive;
+        }
+
+        /* String Lights Effect */
+        .string-lights {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .bulb {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fff, var(--soft-pink));
+            box-shadow: 0 0 20px var(--soft-pink), 0 0 40px var(--lavender);
+            animation: twinkle 3s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        /* Floating Elements */
+        .floating-element {
+            position: fixed;
+            pointer-events: none;
+            opacity: 0.4;
+            z-index: 0;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(5deg); }
+            66% { transform: translateY(30px) rotate(-5deg); }
+        }
+
+        /* --- PASSWORD OVERLAY --- */
+        #passwordOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 240, 245, 0.95);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.6s ease, visibility 0.6s;
+        }
+
+        #passwordOverlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .password-box {
+            background: white;
+            padding: 3rem;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(255, 182, 193, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            border: 3px dashed var(--soft-pink);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .password-box::before {
+            content: '✨';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 1.5rem;
+        }
+
+        .password-box::after {
+            content: '💖';
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 1.5rem;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--lavender);
+            border-radius: 15px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.1rem;
+            text-align: center;
+            margin: 1.5rem 0;
+            outline: none;
+            transition: all 0.3s;
+            letter-spacing: 2px;
+        }
+
+        .password-input:focus {
+            border-color: var(--coral);
+            box-shadow: 0 0 15px rgba(255, 182, 193, 0.3);
+        }
+
+        .btn-enter {
+            background: linear-gradient(135deg, var(--soft-pink), var(--coral));
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 25px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-enter:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 182, 193, 0.4);
+        }
+
+        .password-error {
+            color: #ff6b6b;
+            margin-top: 1rem;
+            font-family: 'Caveat', cursive;
+            font-size: 1.2rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .password-error.show { opacity: 1; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+        .shake { animation: shake 0.4s ease-in-out; }
+
+        /* Opening Scene */
+        #opening {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .wall-title {
+            font-size: clamp(3rem, 10vw, 6rem);
+            background: linear-gradient(135deg, var(--coral), var(--lavender), var(--mint));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1s ease;
+        }
+
+        .wall-subtitle {
+            font-size: 1.5rem;
+            color: var(--text);
+            opacity: 0.8;
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease 0.2s backwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Polaroid Wall Grid */
+        .polaroid-wall {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 3rem;
+            padding: 4rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .polaroid {
+            background: white;
+            padding: 1rem 1rem 4rem 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            transform: rotate(var(--rotation));
+        }
+
+        .polaroid:nth-child(odd) { --rotation: -3deg; }
+        .polaroid:nth-child(even) { --rotation: 2deg; }
+        .polaroid:nth-child(3n) { --rotation: -1deg; }
+        .polaroid:nth-child(4n) { --rotation: 4deg; }
+
+        .polaroid:hover {
+            transform: rotate(0deg) scale(1.05) translateY(-10px);
+            box-shadow: 0 20px 40px rgba(255, 182, 193, 0.3);
+            z-index: 100;
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            filter: sepia(10%) contrast(95%);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .polaroid-caption {
+            position: absolute;
+            bottom: 1rem;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-family: 'Caveat', cursive;
+            font-size: 1.5rem;
+            color: var(--text);
+        }
+
+        /* Washi Tape */
+        .washi-tape {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 25px;
+            background: repeating-linear-gradient(
+                45deg,
+                var(--soft-pink),
+                var(--soft-pink) 5px,
+                var(--lavender) 5px,
+                var(--lavender) 10px
+            );
+            opacity: 0.8;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Push Pin */
+        .push-pin {
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle at 30% 30%, #ff6b9d, #c44569);
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        /* Memory Modal */
+        .memory-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 9998;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .memory-modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .memory-content {
+            background: white;
+            max-width: 600px;
+            width: 100%;
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .memory-content img {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text);
+            background: none;
+            border: none;
+            transition: transform 0.3s;
+        }
+
+        .close-modal:hover {
+            transform: rotate(90deg);
+        }
+
+        /* Stickers */
+        .sticker {
+            position: absolute;
+            font-size: 2rem;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+            animation: wiggle 3s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+
+        /* Timeline */
+        .timeline-container {
+            padding: 4rem 2rem;
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--soft-pink), var(--lavender), var(--mint));
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .timeline-year {
+            margin: 3rem 0;
+            position: relative;
+            width: 50%;
+            padding: 0 2rem;
+        }
+
+        .timeline-year:nth-child(odd) { left: 0; text-align: right; }
+        .timeline-year:nth-child(even) { left: 50%; text-align: left; }
+
+        .timeline-dot {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border: 4px solid var(--coral);
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            box-shadow: 0 0 0 4px rgba(255, 182, 193, 0.2);
+        }
+
+        .timeline-year:nth-child(odd) .timeline-dot { right: -10px; }
+        .timeline-year:nth-child(even) .timeline-dot { left: -10px; }
+
+        .year-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            position: relative;
+            transition: transform 0.3s;
+        }
+
+        .year-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .year-number {
+            font-family: 'Pacifico', cursive;
+            font-size: 2rem;
+            color: var(--coral);
+        }
+
+        /* Music Player */
+        .music-player {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            z-index: 1000;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .music-player:hover {
+            transform: translateY(-5px);
+        }
+
+        .music-player.playing {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 10px 40px rgba(255, 182, 193, 0.3); }
+            50% { box-shadow: 0 10px 60px rgba(255, 182, 193, 0.6); }
+        }
+
+        .music-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--soft-pink), var(--coral));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        /* Film Strip */
+        .film-strip {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding: 2rem 0;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .film-frame {
+            flex: 0 0 300px;
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 5px;
+            scroll-snap-align: start;
+        }
+
+        .film-frame img {
+            width: 100%;
+            border-radius: 3px;
+        }
+
+        /* Countdown */
+        .countdown-container {
+            background: linear-gradient(135deg, var(--lavender), var(--soft-pink));
+            padding: 4rem 2rem;
+            text-align: center;
+            border-radius: 30px;
+            margin: 4rem auto;
+            max-width: 800px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .countdown-container::before {
+            content: '🎂';
+            position: absolute;
+            font-size: 8rem;
+            opacity: 0.1;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .countdown-box {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .countdown-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--coral);
+            display: block;
+        }
+
+        .countdown-label {
+            font-size: 0.9rem;
+            color: var(--text);
+            opacity: 0.8;
+        }
+
+        /* Goals Section */
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .goal-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .goal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--soft-pink), var(--lavender), var(--mint));
+        }
+
+        .goal-card:hover {
+            transform: translateY(-10px) rotate(1deg);
+        }
+
+        .goal-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .polaroid-wall {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .timeline-line {
+                left: 20px;
+            }
+            
+            .timeline-year {
+                width: 100%;
+                left: 0 !important;
+                padding-left: 60px;
+                text-align: left !important;
+            }
+            
+            .timeline-dot {
+                left: 10px !important;
+                right: auto !important;
+            }
+            
+            .countdown-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .music-player {
+                bottom: 20px;
+                right: 20px;
+                left: 20px;
+                justify-content: center;
+            }
+        }
+
+        /* Doodles */
+        .doodle {
+            position: absolute;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .heart {
+            color: var(--coral);
+            font-size: 2rem;
+        }
+
+        .star {
+            color: var(--gold);
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body class="locked">
+
+    <!-- 🔒 PASSWORD OVERLAY (Blocks everything) -->
+    <div id="passwordOverlay">
+        <div class="password-box" id="passwordBox">
+            <h2 class="cursive" style="font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--coral);">Psst...</h2>
+            <p style="margin-bottom: 1.5rem; font-family: 'Caveat', cursive; font-size: 1.3rem;">Enter the secret code to see my world 💕</p>
+            <input type="password" class="password-input" id="passwordInput" placeholder="Type here..." autocomplete="off">
+            <button class="btn-enter" onclick="checkPassword()">Enter My Room ✨</button>
+            <p id="passwordError" class="password-error">Oops! Try again sweetie 💔</p>
+        </div>
+    </div>
+
+    <!-- String Lights -->
+    <div class="string-lights" id="stringLights"></div>
+
+    <!-- Floating Elements -->
+    <div class="floating-element" style="top: 20%; left: 5%; font-size: 2rem;">🌸</div>
+    <div class="floating-element" style="top: 60%; right: 5%; font-size: 2.5rem; animation-delay: 5s;">✨</div>
+    <div class="floating-element" style="top: 40%; left: 3%; font-size: 1.8rem; animation-delay: 10s;">💫</div>
+    <div class="floating-element" style="bottom: 20%; right: 3%; font-size: 2.2rem; animation-delay: 15s;">🦋</div>
+
+    <!-- Opening Scene -->
+    <section id="opening">
+        <h1 class="wall-title cursive">My 18 Years</h1>
+        <p class="wall-subtitle handwritten">A dreamy collection of memories, moments, and me</p>
+    </section>
+
+    <!-- 18 Chapters Wall -->
+    <div class="polaroid-wall" id="memoryWall">
+        <!-- Generated by JavaScript -->
+    </div>
+
+    <!-- Timeline Section -->
+    <section class="timeline-container">
+        <h2 class="cursive text-center" style="font-size: 3rem; color: var(--coral); margin-bottom: 3rem;">My Journey Through Time ✨</h2>
+        <div class="timeline-line"></div>
+        <div id="timelineContent">
+            <!-- Generated by JavaScript -->
+        </div>
+    </section>
+
+    <!-- Video Memories -->
+    <section style="padding: 4rem 2rem; background: rgba(255,255,255,0.5);">
+        <h2 class="cursive text-center" style="font-size: 3rem; color: var(--coral); margin-bottom: 1rem;">Moving Memories 🎬</h2>
+        <p class="handwritten text-center" style="font-size: 1.3rem; margin-bottom: 2rem;">Moments that came alive</p>
+        <div class="film-strip" id="filmStrip">
+            <!-- Generated by JavaScript -->
+        </div>
+    </section>
+
+    <!-- Memory Letters -->
+    <section style="padding: 4rem 2rem; max-width: 800px; margin: 0 auto;">
+        <h2 class="cursive text-center" style="font-size: 3rem; color: var(--coral); margin-bottom: 3rem;">Letters to Myself 💌</h2>
+        <div class="polaroid" style="transform: rotate(-2deg); margin-bottom: 3rem;">
+            <div class="washi-tape"></div>
+            <div class="push-pin"></div>
+            <div style="padding: 2rem; font-family: 'Caveat', cursive; font-size: 1.4rem; line-height: 1.8; color: var(--text);">
+                <p>Dear 18-year-old me,</p>
+                <br>
+                <p>Remember when you thought high school would never end? Look at you now. You're stronger than you know, braver than you feel, and more loved than you realize. Every tear, every laugh, every heartbreak shaped you into this beautiful soul.</p>
+                <br>
+                <p>Keep dreaming big. Keep being kind. Keep being you.</p>
+                <br>
+                <p style="text-align: right;">- Love, Always 💕</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Goals Section -->
+    <section style="padding: 4rem 2rem;">
+        <h2 class="cursive text-center" style="font-size: 3rem; color: var(--coral); margin-bottom: 1rem;">Dreams for the Future 🌟</h2>
+        <p class="handwritten text-center" style="font-size: 1.3rem; margin-bottom: 3rem;">What I want to achieve before 19</p>
+        <div class="goals-grid" id="goalsGrid">
+            <!-- Generated by JavaScript -->
+        </div>
+    </section>
+
+    <!-- Countdown to 19 -->
+    <section class="countdown-container">
+        <h2 class="cursive" style="font-size: 3rem; color: var(--text); margin-bottom: 1rem; position: relative;">Countdown to 19! 🎉</h2>
+        <p class="handwritten" style="font-size: 1.3rem; position: relative;">The next chapter begins in...</p>
+        <div class="countdown-grid" id="countdownGrid">
+            <div class="countdown-box">
+                <span class="countdown-number" id="days">00</span>
+                <span class="countdown-label">Days</span>
+            </div>
+            <div class="countdown-box">
+                <span class="countdown-number" id="hours">00</span>
+                <span class="countdown-label">Hours</span>
+            </div>
+            <div class="countdown-box">
+                <span class="countdown-number" id="minutes">00</span>
+                <span class="countdown-label">Minutes</span>
+            </div>
+            <div class="countdown-box">
+                <span class="countdown-number" id="seconds">00</span>
+                <span class="countdown-label">Seconds</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Memory Modal -->
+    <div class="memory-modal" id="memoryModal" onclick="closeModal(event)">
+        <div class="memory-content" onclick="event.stopPropagation()">
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+            <img id="modalImage" src="" alt="Memory">
+            <h3 class="cursive" id="modalTitle" style="font-size: 2rem; color: var(--coral); margin-bottom: 1rem;"></h3>
+            <p class="handwritten" id="modalText" style="font-size: 1.3rem; line-height: 1.8;"></p>
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed var(--lavender);">
+                <p style="font-family: 'Caveat', cursive; font-size: 1.2rem; color: var(--text); opacity: 0.8;">
+                    <i class="fas fa-heart" style="color: var(--coral);"></i> A moment I'll never forget
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Music Player -->
+    <div class="music-player" id="musicPlayer" onclick="toggleMusic()">
+        <div class="music-icon">
+            <i class="fas fa-music" id="musicIcon"></i>
+        </div>
+        <div>
+            <div style="font-weight: 700; font-size: 0.9rem;">Now Playing</div>
+            <div style="font-size: 0.8rem; opacity: 0.8;">My Life Soundtrack 🎵</div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const PASSWORD = "memories"; // Change this to your desired password
+        const BIRTHDAY = new Date('December 25, 2026 00:00:00'); // Set to actual birthday: new Date('2006-MM-DD')
+        
+        // Data for 18 years
+        const yearsData = [
+            { age: 0, year: '2007', title: 'The Day The World Changed', desc: 'The day a new story began and countless lives were forever touched', img: 'michelle/photo1',memory: 'Baby photos' },
+            { age: 0, year: '2007', title: 'Hello World', desc: 'A tiny arrival with an enormous future waiting ahead', img: 'michelle/photo2',memory: 'First visitors' },
+            { age: 0, year: '2007', title: 'Once Upon a Beggining', desc: 'The very fast page of an unforgettable journey', img: 'michelle/photo3',memory: 'Treasured keepsakes from those early days' },
+            { age: 1, year: '2008', title: 'Tiny Miracle', desc: 'Learning, growing, filling joy in every room', img: 'michelle/photo4',memory: 'First steps, first words, and first adventures' },
+            { age: 1, year: '2008', title: 'Little Sunshine', desc: 'A year of smiles that melted hearts', img: 'michelle/photo5',memory: 'Favorite toys, adorable expressions' },
+            { age: 1, year: '2008', title: 'One-derful year', desc: 'Celebrating a year of incredible firsts', img: 'michelle/photo6',memory: 'Milestones, birthday photos, trasured keepsakes' },
+            { age: 2, year: '2009', title: 'Curious Explorer', desc: 'Every Object becamre a mystery to be solved', img: 'michelle/photo7',memory: 'Discoveries, adventures and funny toddler moments' },
+            { age: 2, year: '2009', title: 'Tiny Tornado', desc: 'Endless energy packed into a small package', img: 'michelle/photo8',memory: 'Running,climbing and playful chaos' },
+            { age: 2, year: '2009', title: 'Double the fun', desc: 'Twice the age, twice the personality', img: 'michelle/photo9',memory: 'Family outings and favourite activities' },
+            { age: 3, year: '2010', title: 'Little Adventurer', desc: 'Fearlessly exploring new worlds and experiences', img: 'michelle/photo10',memory: 'Playground adventites and imaginative play' },
+            { age: 3, year: '2010', title: 'Giggles and Glitter', desc: 'A year sparkling with laughter', img: 'michelle/photo11',memory: 'Parties, costumes and joyful moments' },
+            { age: 3, year: '2010', title: 'Tiny dreamer', desc: 'Imagination begun painting colourful possibilities', img: 'michelle/photo12',memory: 'Pretend games and favourite stories' },
+            { age: 4, year: '2011', title: 'Fearlessly Four', desc:'Confidence growing with everystep', img: 'michelle/photo13',memory: 'New freiendships and favourite stories' },
+            { age: 4, year: '2011', title: 'Magic in motiom', desc: 'Life felt like one endless adventure',img: 'michelle/photo14',memory: 'Family trips and celebrations'},
+            { age: 4, year: '2011', title: 'Storybook Days', desc: 'Everyday held a new tale', img: 'michelle/photo15',memory: 'Drawings, crafts and creative play' },
+            { age: 5, year: '2012', title: 'Fabulous Five', desc: 'A bright and unforgettable year', img: 'michelle/photo16',memory: 'School beginnings and favourite games' },
+            { age: 5, year: '2012', title: 'Little superstar', desc: 'Personality shining brighter than ever', img: 'michelle/photo17',memory: 'Talents,  perfomances and archievements' },
+            { age: 5, year: '2012', title: 'High-Five to Five', desc: 'Celebrating Growth and happiness', img: 'michelle/photo18',memory: 'Birthday fun and special moments' },
+            { age: 6, year: '2013', title: 'Six and Soaring', desc: 'Confidence taking flight', img: 'michelle/photo19',memory: 'Learning milestones and adventures' },
+            { age: 6, year: '2013', title: 'Bright beginings', desc: 'Creativity blossoming everywhere', img: 'michelle/photo20',memory: 'Artwork and school memories' },
+            { age: 6, year: '2013', title: 'Wonder Walker', desc: 'Exploring the world one step at a time', img: 'michelle/photo21',memory: 'Family outings and new experiences' },
+            { age: 7, year: '2014', title: 'Lucky number seven', desc: 'A year filled with happy memories', img: 'michelle/photo22',memory: 'Friendships and accomplishments' },
+            { age: 7, year: '2014', title: 'Dream Chaser', desc: 'Every dream seemed within reach', img: 'michelle/photo23',memory: 'Hobbies and achievements' },
+            { age: 7, year: '2014', title: 'Chapter Seven', desc: 'Another beautiful page in the story', img: 'michelle/photo24',memory: 'Favourite moments and milestones' },
+            { age: 8, year: '2015', title: 'Great at Eight', desc: 'Discovering strengths and passions', img: 'michelle/photo25',memory: 'Sports, arts and school success' },
+            { age: 8, year: '2015', title: 'Adventure Awaits', desc: 'Everyday offered a new journey', img: 'michelle/photo26',memory: 'Outdoor fun and exiting trips' },
+            { age: 8, year: '2015', title: 'Shining Bright', desc: 'Confidence and Personality blooming', img: 'michelle/photo27',memory: 'Friendships and celebrations' },
+            { age: 9, year: '2016', title: 'Fearless Nine', desc: 'Brave enough to try new things', img: 'michelle/photo28',memory: 'Challenges overcome and victories earned' },
+            { age: 9, year: '2016', title: 'Almost Double Digits', desc: 'Standing at the edge of a milestone', img: 'michelle/photo29',memory: 'Growth and exciting adventures' },
+            { age: 9, year: '2016', title: 'Golden Moments', desc: 'A collection of treasured memories', img: 'michelle/photo30',memory: 'Family traditions and Family experiences' },
+            { age: 10, year: '2017', title: 'Double Digits', desc: 'A major milestone worth celebrating', img: 'michelle/photo31',memory: 'Birthday celebrations and archievements' },
+            { age: 10, year: '2017', title: 'Ten out of Ten', desc: 'A year full of unforgettable moments', img: 'michelle/photo32',memory: 'Favourite moments and accomplishments' },
+            { age: 10, year: '2017', title: 'Growing Up Gracefully', desc: 'Learning more about the world and yourself ', img: 'michelle/photo33',memory: 'School highlights and friendships' },
+            { age: 11, year: '2018', title: 'Between Childhood and Change', desc: 'Standing between two beautiful chapters', img: 'michelle/photo34',memory: 'New interests and experiences' },
+            { age: 11, year: '2018', title: 'Eleven Wishes', desc: 'Dreams begging to take shape', img: 'michelle/photo35',memory: 'Goals and special achievements' },
+            { age: 11, year: '2018', title: 'Blooming Beautifully', desc: 'Growing into your unique self ', img: 'michelle/photo36',memory: 'Friendships and passions' },  
+            { age: 12, year: '2019', title: 'Twirling Through Twelve', desc: 'A whirwind of memories and growth', img: 'michelle/photo37',memory: 'School adventures and fun moments' },
+            { age: 12, year: '2019', title: 'Almost a teen', desc: 'The countdown to teenage years begin', img: 'michelle/photo38',memory: 'Milestones and new responsibilities ' },
+            { age: 12, year: '2019', title: 'Twelve tales', desc: 'Another chapter filled with stories', img: 'michelle/photo39',memory: 'Achievements and favourite memories' },
+            { age: 13, year: '2020', title: 'Official Teenager', desc: 'A brand-new era begins', img: 'michelle/photo40',memory:'First teenage adventures and milestones' },
+            { age: 13, year: '2020', title: 'Thirteen and Thriving', desc: 'Discovering Confidence and identity', img: 'michelle/photo41',memory: 'Friendships and personal growth' },
+            { age: 13, year: '2020', title: 'New Chapter, New me ', desc: 'Embracing change and opportunity', img: 'michelle/photo42',memory:  'Lessons learned and archievements'},
+            { age: 14, year: '2021', title: 'Fearlessly fourteen', desc:'Bold,Curious and Determined', img:'michelle/photo43', memory:'School events and Adventures' },
+            { age: 14, year:'2021', tittle: 'Finding my voice', desc:'Learning to express who you are', img:'michelle/photo44', memory:'Passions, Friendships and dreams' },
+            { age: 14, year:'2021', title:  'Golden Fourteen', desc:'A year glowing with responsibilities', img:'michelle/photo45', memory:'Celebrations and accomplishments' },
+            { age: 15, year:'2022', title: 'Fifteen and Flourishing', desc:'Confidence blooming beautifully', img:'michelle/photo46', memory:'Friendships and memorable experiences' },
+            { age: 15, year:'2022', title: 'Wings Unfolding', desc:'Independence beginning to grow', img:'michelle/photo47', memory:'New challenges and achievements' },
+            { age: 15, year:'2022', title: 'Quater-Life Prelude', desc:'Preparing for exciting chapters ahead', img:'michelle/photo48', memory:'Goals and Unforgettable moments' },
+            { age: 16, year:'2023', title: 'Sweet Sixteen', desc:'A clasic milestone filled with memories', img:'michelle/photo49', memory:'Celebrations and achievements' },
+            { age: 16, year:'2023', title: 'Sixteen Sparks', desc:'Bright ideas and endless possibilities', img:'michelle/photo50', memory:'Adventures and personal Growth' },
+            { age: 16, year:'2023', title: 'Chasing Horizons', desc:'Looking towards the future with excitement ', img:'michelle/photo51', memory:'Dreams and Accomplishments' },
+            { age: 17, year:'2024', title: 'Seventeen Dreams', desc:'Ambitions growing larger than ever', img:'michelle/photo52', memory:'School highlights and future plans' },
+            { age: 17, year:'2024', title: 'Dancing Through Seventeen', desc:'Making the most of every moment', img:'michelle/photo53', memory:'Friends, celebrations, adventures' },
+            { age: 17, year:'2024', title: 'Almost There', desc:'One step away from adulthood', img:'michelle/photo54', memory:'Major milestones and reflections' },
+            { age: 18, year:'2025', title: 'Chapter 18: The Grand Entrance', desc:'Steppin into adulthood with courage and excitement', img:'michelle/photo55', memory:'Graduation, archievements and milestones' },
+            { age: 18, year:'2025', title: 'Unwritten Pages', desc:'A future filled with responsibilities waiting to unfold ', img:'michelle/photo56', memory:'Dreams, plans and cherished friendships' },
+            { age: 18, year:'2025', title: 'Becoming', desc:'The story is not ending it is finally beginning', img:'michelle/photo57', memory:'Reflections on childhood, lessons learned, favourite people and hopes for the future' },
+            { age: 18.2, year:'2026', title: 'The year of possibilities', desc:'A year every path seems open and every dream feels within reach ', img:'michelle/photo58', memory:'Future plans, bucket-list moments' },
+            { age: 18.3, year:'2026', title: 'Blooming into Me', desc:'Becoming more comfortable, confident and authentic', img:'michelle/photo59', memory:'Personal growth moments, lessons learned and meaningful friendships' },
+            { age: 18.4, year:'2026', title: 'A Beautiful Beginning', desc:'Not an ending to childhood, but the start of something extraordinary', img:'michelle/photo60', memory:'Reflections, family memories, hopes for the future' },
+            { age: 18.5, year:'2026', title: 'Legally Legendary', desc:'Officially an adult and ready to leave a mark on the world', img:'michelle/photo61', memory:'18th birthdat celebration, first adult milestones, achievements' },
+            { age: 18.6, year:'2026', title: 'Eighteen Candles, Infinite Dreams', desc:'One Candle for every year lived and countless dreams still ahead', img:'michelle/photo62', memory:'Birthday wishes, favorite memories from childhood aspirations' },
+            { age: 18.7, year:'2026', title: 'The Launch Pad', desc:'Childhood built the rocket, now it is time for takeoff', img:'michelle/photo63', memory:'' },
+            { age: 18.8, year:'2026', title: 'Main Character Energy', desc:'The chapter where confidence takes center stage', img:'michelle/photo64', memory:'Favourite selfies, adventures with friends,proudest achievements' },
+            { age: 18.9, year:'2026', title: 'Eighteen Chapters Later ', desc:'Looking back on every page that shaped who you are today', img:'michelle/photo65', memory:'Throwback photos ,Childhood highlights, favourite milestones' }
+
+
+        ];
+
+        const goals = [
+            { icon: '🎓', title: 'New Beginnings', desc: 'Start strong' },
+            { icon: '✈️', title: 'Travel', desc: 'Visit at least 3 new places' },
+            { icon: '📚', title: 'Read', desc: 'Read 20 books' },
+            { icon: '🎨', title: 'Create', desc: 'Start a creative project' },
+            { icon: '💪', title: 'Grow', desc: 'Learn a new skill' },
+            { icon: '💝', title: 'Love', desc: 'Cherish every moment' }
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            createStringLights();
+            generateMemoryWall();
+            generateTimeline()
+            generateFilmStrip();
+            generateGoals();
+            startCountdown()
+            initAnimations();
+            
+            // Focus password input immediately
+            setTimeout(() => document.getElementById('passwordInput').focus(), 500);
+        });
+
+        function createStringLights() {
+            const container = document.getElementById('stringLights');
+            for (let i = 0; i < 20; i++) {
+                const bulb = document.createElement('div');
+                bulb.className = 'bulb';
+                bulb.style.left = `${i * 5}%`;
+                bulb.style.animationDelay = `${i * 0.2}s`;
+                container.appendChild(bulb);
+            }
+        }
+
+        function generateMemoryWall() {
+            const wall = document.getElementById('memoryWall');
+            yearsData.forEach((year, index) => {
+                const polaroid = document.createElement('div');
+                polaroid.className = 'polaroid';
+                polaroid.innerHTML = `
+                    <div class="washi-tape" style="background: repeating-linear-gradient(45deg, ${getRandomColor()}, ${getRandomColor()} 5px, ${getRandomColor()} 5px, ${getRandomColor()} 10px)"></div>
+                    <div class="push-pin"></div>
+                    <img src="${year.img}" alt="Age ${year.age}" loading="lazy">
+                    <div class="polaroid-caption">Age ${year.age} - ${year.title}</div>
+                    ${index % 3 === 0 ? '<div class="sticker" style="top: 10px; right: -10px;">✨</div>' : ''}
+                    ${index % 4 === 0 ? '<div class="sticker" style="bottom: 50px; left: -15px; font-size: 1.5rem;">💕</div>' : ''}
+                `;
+                polaroid.onclick = () => openMemory(year);
+                wall.appendChild(polaroid);
+            });
+        }
+
+        function getRandomColor() {
+            const colors = ['#FFD1DC', '#E6E6FA', '#C1E1DC', '#FFDAB9', '#FFB6C1'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function generateTimeline() {
+            const container = document.getElementById('timelineContent');
+            yearsData.forEach((year, index) => {
+                const item = document.createElement('div');
+                item.className = 'timeline-year';
+                item.innerHTML = `
+                    <div class="timeline-dot"></div>
+                    <div class="year-card">
+                        <div class="year-number">Age ${year.age}</div>
+                        <h3 style="color: var(--coral); margin: 0.5rem 0;">${year.title}</h3>
+                        <p style="font-family: 'Caveat', cursive; font-size: 1.2rem;">${year.desc}</p>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function generateFilmStrip() {
+            const strip = document.getElementById('filmStrip');
+            const videos = [
+                'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=400',
+                'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400',
+                'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400',
+                'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=400'
+            ];
+            
+            videos.forEach((video, index) => {
+                const frame = document.createElement('div');
+                frame.className = 'film-frame';
+                frame.innerHTML = `
+                    <img src="${video}" alt="Video memory ${index + 1}">
+                    <div style="color: white; text-align: center; padding: 0.5rem; font-family: 'Caveat', cursive;">
+                        <i class="fas fa-play-circle" style="margin-right: 5px;"></i> Memory ${index + 1}
+                    </div>
+                `;
+                strip.appendChild(frame);
+            });
+        }
+
+        function generateGoals() {
+            const grid = document.getElementById('goalsGrid');
+            goals.forEach(goal => {
+                const card = document.createElement('div');
+                card.className = 'goal-card';
+                card.innerHTML = `
+                    <div class="goal-icon">${goal.icon}</div>
+                    <h3 style="color: var(--coral); margin-bottom: 0.5rem;">${goal.title}</h3>
+                    <p style="font-family: 'Caveat', cursive; font-size: 1.2rem;">${goal.desc}</p>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function openMemory(year) {
+            document.getElementById('modalImage').src = year.img;
+            document.getElementById('modalTitle').textContent = `Age ${year.age} - ${year.title}`;
+            document.getElementById('modalText').textContent = year.memory;
+            document.getElementById('memoryModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(event) {
+            if (!event || event.target.id === 'memoryModal' || event.target.className === 'close-modal') {
+                document.getElementById('memoryModal').classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function checkPassword() {
+            const input = document.getElementById('passwordInput');
+            const error = document.getElementById('passwordError');
+            const box = document.getElementById('passwordBox');
+            const overlay = document.getElementById('passwordOverlay');
+            
+            if (input.value.toLowerCase().trim() === PASSWORD) {
+                // Success! Hide overlay and unlock scrolling
+                overlay.classList.add('hidden');
+                document.body.classList.remove('locked');
+                
+                // Start scroll animations
+                initScrollAnimations();
+            } else {
+                // Wrong password
+                error.classList.add('show');
+                box.classList.add('shake');
+                input.value = '';
+                input.focus();
+                
+                setTimeout(() => {
+                    box.classList.remove('shake');
+                    error.classList.remove('show');
+                }, 1000);
+            }
+        }
+
+        function startCountdown() {
+            function updateCountdown() {
+                const now = new Date();
+                const diff = BIRTHDAY - now;
+                
+                // SAFETY CHECK: If BIRTHDAY is broken, this will catch it
+                if (isNaN(diff)) {
+                    console.error("BIRTHDAY is invalid! Check your date format.");
+                    document.getElementById('days').textContent = '--';
+                    return;
+                }
+
+                // If the date has already passed
+                if (diff <= 0) {
+                    document.getElementById('days').textContent = '🎉';
+                    document.getElementById('hours').textContent = '00';
+                    document.getElementById('minutes').textContent = '00';
+                    document.getElementById('seconds').textContent = '00';
+                    return;
+                }
+                
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                document.getElementById('days').textContent = String(days).padStart(2, '0');
+                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+            }
+            
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+        
+        let isPlaying = false;
+        function toggleMusic() {
+            const player = document.getElementById('musicPlayer');
+            const icon = document.getElementById('musicIcon');
+            isPlaying = !isPlaying;
+            
+            if (isPlaying) {
+                player.classList.add('playing');
+                icon.className = 'fas fa-pause';
+                // In a real implementation, you would play audio here
+                // const audio = new Audio('your-song.mp3');
+                // audio.play();
+            } else {
+                player.classList.remove('playing');
+                icon.className = 'fas fa-music';
+                // audio.pause();
+            }
+        }
+
+        function initAnimations() {
+            gsap.registerPlugin(ScrollTrigger);
+            
+            gsap.utils.toArray('.polaroid').forEach((polaroid, i) => {
+                gsap.from(polaroid, {
+                    scrollTrigger: {
+                        trigger: polaroid,
+                        start: 'top 85%',
+                    },
+                    y: 100,
+                    opacity: 0,
+                    rotation: Math.random() * 10 - 5,
+                    duration: 0.8,
+                    delay: i * 0.05,
+                    ease: 'power3.out'
+                });
+            });
+        }
+
+        function initScrollAnimations() {
+            gsap.registerPlugin(ScrollTrigger);
+            
+            gsap.utils.toArray('.timeline-year').forEach((item, i) => {
+                gsap.from(item, {
+                    scrollTrigger: {
+                        trigger: item,
+                        start: 'top 80%',
+                    },
+                    x: i % 2 === 0 ? -50 : 50,
+                    opacity: 0,
+                    duration: 0.8,
+                    ease: 'power3.out'
+                });
+            });
+        }
+
+        // Allow Enter key for password
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkPassword();
+        });
+
+        // Add floating photos effect
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallax = document.querySelectorAll('.floating-element');
+            parallax.forEach((element, index) => {
+                const speed = 0.5 + (index * 0.1);
+                element.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        });
+    </script>
+</body>
+</html>
